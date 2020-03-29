@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -9,12 +10,12 @@ import (
 )
 
 type ResourceItem struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"title"`
-	URL       string    `json:"url"`
-	Tag       Tag       `json:"tag"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        string    `json:"id" db:"id"`
+	Name      string    `json:"name" db:"title"`
+	URL       string    `json:"url" db:"url"`
+	Tag       string    `json:"tag" db:"tag"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 	// Author     string    `json:"author"`
 	// Favourites uint32    `json:"favourites"`
 }
@@ -37,16 +38,29 @@ func (rs Resources) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func AddResourceItem(db *sqlx.DB) error {
-	tx := db.MustBegin()
-	_, err := tx.Exec("INSERT INTO resource_item (id, title, url, tag, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)", "109293023", "gogithub", "http://go.githug.com", "92809324", time.Now().UTC(), time.Now().UTC())
-	if err != nil {
-		return err
-	}
-	err = tx.Commit()
+func (ri *ResourceItem) Save(db *sqlx.DB) error {
+	query := `INSERT INTO resource_item(id, title, url, tag, created_at, updated_at) 
+	VALUES(:id, :title, :url, :tag, :created_at, :updated_at)`
+	_, err := db.NamedExec(query, ri)
 	if err != nil {
 		return err
 	}
 	return nil
+}
 
+func (rs *Resources) Retrieve(db *sqlx.DB) error {
+	query := `Select * from resource_item`
+	err := db.Select(rs, query)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ResourceItem) Get(w http.ResponseWriter, req *http.Request) {
+	data, err := json.Marshal(r)
+	if err != nil {
+		log.Fatal("unable to convert json")
+	}
+	w.Write(data)
 }
