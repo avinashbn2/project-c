@@ -3,7 +3,6 @@ package main
 import (
 	"cproject/cmd/db"
 	"cproject/internal/models"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -12,16 +11,14 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type DB *sqlx.DB
-
 type App struct {
-	db DB
+	db *sqlx.DB
 }
 
-var app App
-var allResources models.Resources
+// var app App
+// var allResources models.Resources
 
-func InitRouter() *chi.Mux {
+func (app *App) InitRouter() *chi.Mux {
 	r := chi.NewRouter()
 	res := &models.ResourceItem{
 		ID:        "9237051",
@@ -32,8 +29,8 @@ func InitRouter() *chi.Mux {
 		UpdatedAt: time.Now().UTC(),
 	}
 	r.Route("/resources", func(router chi.Router) {
-		router.Get("/", res.Get)
-		router.Get("/res", res.Get)
+		router.Get("/", res.Get(app.db))
+		router.Get("/res", res.Get(app.db))
 
 	})
 	return r
@@ -42,27 +39,29 @@ func main() {
 
 	// TODO pass connection variableshere
 	db := db.NewConnection()
-	app = App{db}
+	app := &App{db}
 	// resources, err := models.GetResourceItem(app.db)
 	// fmt.Println(resources)
-	// ritem := &models.ResourceItem{
-	// 	ID:        "9237051",
-	// 	Name:      "Go",
-	// 	URL:       "http://Go2.com",
-	// 	Tag:       "Go",
-	// 	CreatedAt: time.Now().UTC(),
-	// 	UpdatedAt: time.Now().UTC(),
-	// }
-	// err := ritem.Save(db)
-	var resources models.Resources
-	err := resources.Retrieve(db)
+	// var resources models.Resources
+	// err := resources.Retrieve(db)
+	// fmt.Println(resources)
+	// allResources = resources
+	// http.Handle("/", allResources)
+	mux := app.InitRouter()
+	err := http.ListenAndServe(":3001", mux)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(resources)
-	// allResources = resources
-	// http.Handle("/", allResources)
-	mux := InitRouter()
-	err = http.ListenAndServe(":3001", mux)
-	fmt.Println(err)
+
+	// fmt.Println(err)
 }
+
+// ritem := &models.ResourceItem{
+// 	ID:        "9237053",
+// 	Name:      "Rust",
+// 	URL:       "http://Rust2.com",
+// 	Tag:       "Rust",
+// 	CreatedAt: time.Now().UTC(),
+// 	UpdatedAt: time.Now().UTC(),
+// }
+// err := ritem.Save(db)
