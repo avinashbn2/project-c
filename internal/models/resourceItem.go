@@ -57,10 +57,15 @@ func (rs *Resources) Retrieve(db *sqlx.DB) error {
 	return nil
 }
 
-func (r *ResourceItem) Get(w http.ResponseWriter, req *http.Request) {
-	data, err := json.Marshal(r)
-	if err != nil {
-		log.Fatal("unable to convert json")
+func (r *ResourceItem) Get(db *sqlx.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		var resources Resources
+		resources.Retrieve(db)
+		data, err := json.Marshal(resources)
+		if err != nil {
+			log.Fatal("unable to convert json")
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(data)
 	}
-	w.Write(data)
 }

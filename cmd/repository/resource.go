@@ -1,23 +1,39 @@
 package repository
 
-import "database/sql"
+import (
+	"cproject/internal/models"
+	"encoding/json"
+	"net/http"
+
+	"github.com/jmoiron/sqlx"
+)
 
 type ResourceRepo struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func NewResourceRepo(db *sql.DB) *ResourceRepo {
+func NewResourceRepo(database *sqlx.DB) *ResourceRepo {
 	return &ResourceRepo{
-		db: db,
+		db: database,
 	}
 }
+
 //FindAll : Select all from the table
-func (rp *ResourceRepo) FindAll() (models.Resources, error) {
-	query := `Select * from resource_item`
-	var rs Resources
-	err := rp.db.Select(rs, query)
-	if err != nil {
-		return nil, err
+func (rp *ResourceRepo) FindAll() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := `Select * from resource_item`
+		var rs models.Resources
+		err := rp.db.Select(&rs, query)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+
+		}
+		bytes, err := json.Marshal(&rs)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Write([]byte(bytes))
 	}
-	return rs, nil
 }
