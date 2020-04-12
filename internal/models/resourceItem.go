@@ -10,7 +10,7 @@ import (
 )
 
 type ResourceItem struct {
-	ID        string    `json:"id" db:"id"`
+	ID        string    `json:"id"`
 	Name      string    `json:"name" db:"title"`
 	URL       string    `json:"url" db:"url"`
 	Tag       string    `json:"tag" db:"tag"`
@@ -39,8 +39,8 @@ func (rs Resources) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ri *ResourceItem) Save(db *sqlx.DB) error {
-	query := `INSERT INTO resource_item(id, title, url, tag, created_at, updated_at) 
-	VALUES(:id, :title, :url, :tag, :created_at, :updated_at)`
+	query := `INSERT INTO resource_item( title, url, tag, created_at, updated_at) 
+	VALUES(:title, :url, :tag, :created_at, :updated_at)`
 	_, err := db.NamedExec(query, ri)
 	if err != nil {
 		return err

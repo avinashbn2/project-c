@@ -1,6 +1,6 @@
 create table resource_item
 (
-    id VARCHAR(20) PRIMARY KEY ,
+    id SERIAL PRIMARY KEY ,
     title TEXT NOT NULL,
     tag VARCHAR(20) NOT NULL,
     created_at TIMESTAMP,
@@ -9,11 +9,11 @@ create table resource_item
 );
 create table tag
 (
-    tid VARCHAR(20) PRIMARY KEY ,
+    tid SERIAL PRIMARY KEY ,
     name VARCHAR(20) NOT NULL,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
-    parent VARCHAR(20),
+    parent SERIAL,
     FOREIGN KEY (parent)  REFERENCES tag (tid)    ON DELETE CASCADE
 
 );

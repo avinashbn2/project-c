@@ -58,11 +58,14 @@ func main() {
 }
 
 // ritem := &models.ResourceItem{
-// 	ID:        "9237053",
-// 	Name:      "Rust",
-// 	URL:       "http://Rust2.com",
-// 	Tag:       "Rust",
+// 	ID:        "9237055",
+// 	Name:      "React",
+// 	URL:       "http://React2.com",
+// 	Tag:       "React",
 // 	CreatedAt: time.Now().UTC(),
 // 	UpdatedAt: time.Now().UTC(),
 // }
-// err := ritem.Save(db)
+// err := ritem.Save(database)
+// if err != nil {
+// 	fmt.Print(err)
+// }

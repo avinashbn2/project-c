@@ -20,8 +20,14 @@ func NewServer(port string, repo *repository.ResourceRepo) *Server {
 }
 func (s *Server) Handler() http.Handler {
 	router := chi.NewRouter()
-	router.Route("/test", func(r chi.Router) {
+	router.Route("/resource", func(r chi.Router) {
 		r.Get("/", s.resourceRepo.FindAll())
+		r.Get("/{id}", s.resourceRepo.FindByID())
+		r.Post("/", s.resourceRepo.Add())
+		r.Put("/{id}", s.resourceRepo.Update())
+		// r.Delete(/, s.resourceRepo.Remove())
+
 	})
 	return router
+
 }
