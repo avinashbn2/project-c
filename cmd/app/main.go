@@ -40,10 +40,8 @@ func main() {
 	// TODO pass connection variableshere
 	database := db.NewConnection()
 	// resources, err := models.GetResourceItem(app.db)
-	// fmt.Println(resources)
 	// var resources models.Resources
 	// err := resources.Retrieve(db)
-	// fmt.Println(resources)
 	// allResources = resource5ks
 	// http.Handle("/", allResources)
 	// mux := app.InitRouter()
@@ -54,7 +52,6 @@ func main() {
 	if err != nil {
 		fmt.Print(err)
 	}
-	// fmt.Println(err)
 }
 
 // ritem := &models.ResourceItem{

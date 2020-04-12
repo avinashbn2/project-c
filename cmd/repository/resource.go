@@ -4,7 +4,10 @@ import (
 	"cproject/internal/models"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/jmoiron/sqlx"
@@ -27,6 +30,7 @@ func (rp *ResourceRepo) FindAll() http.HandlerFunc {
 		var rs models.Resources
 		err := rp.db.Select(&rs, query)
 		if err != nil {
+			log.Fatal(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 
@@ -92,28 +96,40 @@ func (rp *ResourceRepo) FindByID() http.HandlerFunc {
 //Update : Update Resource data
 func (rp *ResourceRepo) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := chi.URLParam(r, "id")
-
-		query := `Select * from resource_item where id= ?`
-		var rs models.ResourceItem
-		err := rp.db.Select(&rs, query, id)
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
 		if err != nil {
+			log.Fatal(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		query := fmt.Sprintf("Select * from resource_item where id=%d limit 1", id)
+		var resources models.Resources
+		err = rp.db.Select(&resources, query)
+		if err != nil {
+			log.Fatal(err, err.Error(), "update")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		var rs models.ResourceItem
+		rs.Override(resources[0])
 		err = json.NewDecoder(r.Body).Decode(&rs)
+
 		if err != nil {
+			log.Fatal(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		err = rs.Save(rp.db)
+		rs.UpdatedAt = time.Now().UTC()
+		err = rs.Update(rp.db)
 		if err != nil {
+			log.Fatal(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		w.Header().Add("Content-Type", "application/json")
 		rsp, err := json.Marshal(&rs)
 		if err != nil {
+			log.Fatal(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

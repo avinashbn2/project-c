@@ -47,6 +47,33 @@ func (ri *ResourceItem) Save(db *sqlx.DB) error {
 	}
 	return nil
 }
+func (ri *ResourceItem) Override(from ResourceItem) {
+	if from.Name != "" {
+		ri.Name = from.Name
+	}
+	if from.URL != "" {
+		ri.URL = from.URL
+	}
+	if from.Tag != "" {
+		ri.Tag = from.Tag
+	}
+	if from.ID != "" {
+		ri.ID = from.ID
+	}
+	if !from.CreatedAt.IsZero() {
+		ri.CreatedAt = from.CreatedAt
+	}
+
+}
+func (ri *ResourceItem) Update(db *sqlx.DB) error {
+	query := `UPDATE resource_item SET title=:title, url=:url, tag=:tag,updated_at=:updated_at  WHERE id=:id`
+	_, err := db.NamedExec(query, ri)
+	if err != nil {
+		log.Fatal(err, "UPDATE")
+		return err
+	}
+	return nil
+}
 
 func (rs *Resources) Retrieve(db *sqlx.DB) error {
 	query := `Select * from resource_item`
