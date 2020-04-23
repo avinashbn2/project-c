@@ -4,9 +4,12 @@ import (
 	"cproject/cmd/db"
 	"cproject/cmd/repository"
 	"fmt"
+	"log"
 	"net/http"
+	"sync"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/spf13/viper"
 )
 
 type App struct {
@@ -34,17 +37,27 @@ type App struct {
 // 	return r
 
 // }
+var once sync.Once
 
+func loadConfig(key string) string {
+	viper.SetConfigFile(".env")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	value, ok := viper.Get(key).(string)
+	if !ok {
+		log.Fatal("Invlaid type assertion")
+	}
+
+	return value
+}
 func main() {
-
+	connString := loadConfig("DB_CONN_STRING")
 	// TODO pass connection variableshere
-	database := db.NewConnection()
-	// resources, err := models.GetResourceItem(app.db)
-	// var resources models.Resources
-	// err := resources.Retrieve(db)
-	// allResources = resource5ks
-	// http.Handle("/", allResources)
-	// mux := app.InitRouter()
+	database := db.NewConnection(connString)
+
 	repo := repository.NewResourceRepo(database)
 
 	server := NewServer(":3000", repo)
@@ -53,16 +66,3 @@ func main() {
 		fmt.Print(err)
 	}
 }
-
-// ritem := &models.ResourceItem{
-// 	ID:        "9237055",
-// 	Name:      "React",
-// 	URL:       "http://React2.com",
-// 	Tag:       "React",
-// 	CreatedAt: time.Now().UTC(),
-// 	UpdatedAt: time.Now().UTC(),
-// }
-// err := ritem.Save(database)
-// if err != nil {
-// 	fmt.Print(err)
-// }

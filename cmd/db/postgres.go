@@ -12,9 +12,9 @@ type Querier interface {
 	Retrieve()
 }
 
-func NewConnection() *sqlx.DB {
+func NewConnection(conStr string) *sqlx.DB {
 
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=postgres password=secret sslmode=disable")
+	db, err := sqlx.Connect("postgres", conStr)
 	if err != nil {
 		log.Fatal(err)
 	}
