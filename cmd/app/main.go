@@ -18,7 +18,6 @@ type App struct {
 
 // var app App
 // var allResources models.Resources
-
 // func (app *App) InitRouter() *chi.Mux {
 // 	r := chi.NewRouter()
 // 	// res := &models.ResourceItem{
@@ -60,7 +59,9 @@ func main() {
 
 	repo := repository.NewResourceRepo(database)
 
-	server := NewServer(":3000", repo)
+	tagRepo := repository.NewTagRepository(database)
+
+	server := NewServer(":3000", repo, tagRepo)
 	err := http.ListenAndServe(":3001", server.Handler())
 	if err != nil {
 		fmt.Print(err)

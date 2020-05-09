@@ -47,6 +47,7 @@ func (ri *ResourceItem) Save(db *sqlx.DB) error {
 	}
 	return nil
 }
+
 func (ri *ResourceItem) Override(from ResourceItem) {
 	if from.Name != "" {
 		ri.Name = from.Name
