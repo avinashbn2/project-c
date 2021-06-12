@@ -39,7 +39,7 @@ func (rs Resources) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ri *ResourceItem) Save(db *sqlx.DB) error {
-	query := `INSERT INTO resource_item( title, url, tag, created_at, updated_at) 
+	query := `INSERT INTO resource_item( title, url, tag, created_at, updated_at)
 	VALUES(:title, :url, :tag, :created_at, :updated_at)`
 	_, err := db.NamedExec(query, ri)
 	if err != nil {

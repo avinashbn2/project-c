@@ -1,4 +1,4 @@
-package models
+package tag
 
 type Tag struct {
 	TID    string `json:"tid" db:"tid"`
