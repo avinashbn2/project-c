@@ -149,8 +149,8 @@ func (a *auth) callback() http.HandlerFunc {
 			Expires:  expirationTime,
 			SameSite: http.SameSiteNoneMode,
 			Path:     "/",
-			//HttpOnly: true,
-			//Secure: true,
+			HttpOnly: true,
+			Secure:   true,
 		})
 
 		http.Redirect(w, r, a.cfg.CLIENT_URL+"/resources", http.StatusTemporaryRedirect)
@@ -161,12 +161,12 @@ func (a *auth) logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		http.SetCookie(w, &http.Cookie{
-			Name:   "Token",
-			Value:  "rubbish",
-			MaxAge: -1,
-			Path:   "/",
-			//HttpOnly: true,
-			//Secure: true,
+			Name:     "Token",
+			Value:    "rubbish",
+			MaxAge:   -1,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   true,
 		})
 		http.Redirect(w, r, a.cfg.CLIENT_URL, http.StatusTemporaryRedirect)
 	}
