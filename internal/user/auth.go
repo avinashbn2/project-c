@@ -36,7 +36,7 @@ type auth struct {
 
 func RegisterAuthHandlers(cfg *config.Config, service Service) func(chi.Router) {
 	googleOauthConfig := &oauth2.Config{
-		RedirectURL:  cfg.CLIENT_URL + "/auth/callback",
+		RedirectURL:  cfg.SERVER_URL + "/auth/callback",
 		ClientID:     cfg.GAUTH_CLIENT_ID,
 		ClientSecret: cfg.GAUTH_CLIENT_SECRET,
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},

@@ -6,4 +6,5 @@ type Config struct {
 	GAUTH_CLIENT_SECRET string `yaml:"GAUTH_CLIENT_SECRET"`
 	JWTKEY              string `yaml:"JWTKEY"`
 	CLIENT_URL          string `yaml:"CLIENT_URL"`
+	SERVER_URL          string `yaml:"SERVER_URL"`
 }
