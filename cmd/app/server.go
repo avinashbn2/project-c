@@ -49,6 +49,12 @@ func (s *Server) Handler() http.Handler {
 	resourceRepo := resource.NewRepo(s.db)
 	resourceHandlers := resource.RegisterHandlers(s.cfg, resource.NewService(resourceRepo))
 	userHandlers := user.RegisterHandlers(userService)
+	router.Route("/health_check", func(r chi.Router) {
+
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("test"))
+		})
+	})
 
 	router.Route("/auth", authHandlers)
 	router.Group(func(r chi.Router) {
