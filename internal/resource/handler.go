@@ -46,6 +46,7 @@ type QueryParams struct {
 	sortOrder string
 	sortParam string
 	offset    int
+	search    string
 }
 
 type QueryWithUser struct {
@@ -116,6 +117,7 @@ func (h *handler) get() http.HandlerFunc {
 			sortOrder = sortPair[1]
 			sortParam = sortPair[0]
 		}
+		search := r.URL.Query().Get("search")
 		offset := (page - 1) * limit
 		user, err := user.GetUser(r.Context())
 		if err != nil {
@@ -125,7 +127,7 @@ func (h *handler) get() http.HandlerFunc {
 			return
 		}
 
-		response, err := h.srv.get(&QueryWithUser{user, QueryParams{page, limit, sortOrder, sortParam, offset}})
+		response, err := h.srv.get(&QueryWithUser{user, QueryParams{page, limit, sortOrder, sortParam, offset, search}})
 		if err != nil {
 			log.Println("HANDLER", err)
 		}
@@ -223,6 +225,7 @@ func (h *handler) getByUserLikes() http.HandlerFunc {
 			sortOrder = sortPair[1]
 			sortParam = sortPair[0]
 		}
+		search := r.URL.Query().Get("search")
 		offset := (page - 1) * limit
 		user, err := user.GetUser(r.Context())
 		if err != nil {
@@ -232,7 +235,7 @@ func (h *handler) getByUserLikes() http.HandlerFunc {
 			return
 		}
 
-		response, err := h.srv.getByUserLikes(&QueryWithUser{user, QueryParams{page, limit, sortOrder, sortParam, offset}})
+		response, err := h.srv.getByUserLikes(&QueryWithUser{user, QueryParams{page, limit, sortOrder, sortParam, offset, search}})
 		if err != nil {
 			log.Println("HANDLER", err)
 		}
@@ -268,6 +271,7 @@ func (h *handler) getByTrending() http.HandlerFunc {
 			sortOrder = sortPair[1]
 			sortParam = sortPair[0]
 		}
+		search := r.URL.Query().Get("search")
 		offset := (page - 1) * limit
 		user, err := user.GetUser(r.Context())
 		if err != nil {
@@ -277,7 +281,7 @@ func (h *handler) getByTrending() http.HandlerFunc {
 			return
 		}
 
-		response, err := h.srv.getByTrending(&QueryWithUser{user, QueryParams{page, limit, sortOrder, sortParam, offset}})
+		response, err := h.srv.getByTrending(&QueryWithUser{user, QueryParams{page, limit, sortOrder, sortParam, offset, search}})
 		if err != nil {
 			log.Println("HANDLER", err)
 		}

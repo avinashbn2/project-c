@@ -52,6 +52,7 @@ func (rp *repository) getByTrending(qp *QueryWithUser) (*ResourceResponse, error
 	query := fmt.Sprintf(`Select title, url, author, image,excerpt,created_at, resource_item.updated_at, (select count(*) from user_resource where resource_item.id=user_resource.rid )
 as likes   from resource_item inner join user_resource on user_resource.rid = resource_item.id and user_resource.updated_at > now() - interval '1' day  order by likes desc Limit
 %d offset %d`, qp.limit, qp.offset)
+
 	var rs Resources
 	err := rp.db.Select(&rs, query)
 	if err != nil {
@@ -80,6 +81,16 @@ func (rp *repository) get(qp *QueryWithUser) (*ResourceResponse, error) {
 					 where  ur.rid=resource_item.id and ur.uid= %d
 					) as like_by_user,
 					(select count(*) from user_resource where resource_item.id=user_resource.rid) as likes   from resource_item order by %s %s limit %d offset %d`, qp.user.ID, qp.sortParam, qp.sortOrder, qp.limit, qp.offset)
+	if qp.search != "" {
+		query = fmt.Sprintf(`Select *, exists( select * from user_resource ur
+					 where  ur.rid=resource_item.id and ur.uid= %d
+					) as like_by_user,
+					(select count(*) from user_resource where resource_item.id=user_resource.rid) as likes   from resource_item
+
+					where to_tsvector('english', excerpt) @@ to_tsquery('english', '%s') or to_tsvector('english', title) @@ to_tsquery('english','%s') order by %s %s limit %d offset %d`, qp.user.ID, qp.search, qp.search, qp.sortParam, qp.sortOrder, qp.limit, qp.offset)
+
+	}
+
 	var rs Resources
 	err := rp.db.Select(&rs, query)
 	if err != nil {
